@@ -1,0 +1,98 @@
+<nz-layout style="background-color: white;">
+  <nz-header class="header">
+    <nz-page-header class="page-header">
+      <nz-page-header-title>工艺管理</nz-page-header-title>
+      <nz-page-header-extra>
+        <nz-space>
+          <button *nzSpaceItem nz-button nzType="primary" [disabled]="createTechnologyButtonDisabled"
+            (click)="createTechnology()">新建工艺</button>
+          <button *nzSpaceItem nz-button nzType="primary" nzDanger>删除工艺</button>
+        </nz-space>
+      </nz-page-header-extra>
+      <nz-page-header-content>
+        <div style="display: flex;">
+          <nz-statistic nzTitle="数量" [nzValue]="technologies.length" nzSuffix="种"></nz-statistic>
+          <div>
+          </div>
+        </div>
+      </nz-page-header-content>
+    </nz-page-header>
+  </nz-header>
+  <nz-content>
+    <nz-table #basicTable [nzData]="technologies" nzTableLayout="fixed" [nzLoading]="!technologies">
+      <thead>
+        <tr>
+          <th nzAlign="center" nzEllipsis nzWidth="15%">名称</th>
+          <th nzAlign="center" nzEllipsis nzWidth="20%">描述</th>
+          <th nzAlign="center" nzEllipsis nzWidth="12.5%">调整方式</th>
+          <th nzAlign="center" nzEllipsis nzWidth="12.5%">调整因子</th>
+          <th nzAlign="center" nzEllipsis nzWidth="20%">备注</th>
+          <th nzAlign="center" nzEllipsis nzWidth="20%">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of basicTable.data">
+          <td nzAlign="center" nzEllipsis class="editable-unit">
+            <div class="editable-cell" [hidden]="data.value['edit'] === 1" (click)="data.value['edit'] = 1"
+              [ngStyle]="{'color': data.value['name'] ? 'black' : 'lightgrey'}">
+              {{data.value['name'] ? data.value['name'] : '请输入名称'}}
+            </div>
+            <input nz-input type="text" [hidden]="data.value['edit'] !== 1" (blur)="change(data.value)"
+              [(ngModel)]="data.value['name']" [cdkTrapFocusAutoCapture]="data.value['edit'] === 1"
+              [cdkTrapFocus]="data.value['edit'] === 1" (ngModelChange)="data.value['change'] = true" />
+          </td>
+          <td [nzAlign]="data.value['describe'] ? 'left' : 'center'" nzEllipsis class="editable-unit">
+            <div class="editable-cell" [hidden]="data.value['edit'] === 2" (click)="data.value['edit'] = 2"
+              [ngStyle]="{'color': data.value['describe'] ? 'black' : 'lightgrey'}">
+              {{data.value['describe'] ? data.value['describe'] : '—'}}
+            </div>
+            <input nz-input type="text" [hidden]="data.value['edit'] !== 2" (blur)="change(data.value)"
+              [(ngModel)]="data.value['describe']" [cdkTrapFocusAutoCapture]="data.value['edit'] === 2"
+              [cdkTrapFocus]="data.value['edit'] === 2" (ngModelChange)="data.value['change'] = true" />
+          </td>
+          <td nzAlign="center" nzEllipsis class="editable-unit">
+            <div class="editable-cell" [hidden]="data.value['edit'] === 3" (click)="data.value['edit'] = 3"
+              [ngStyle]="{'color': data.value['pattern'] ? 'black' : 'lightgrey'}">
+              {{data.value['pattern'] ? data.value['pattern'] : '—'}}
+            </div>
+            <nz-select style="position: relative; width: 100%" [hidden]="data.value['edit'] !== 3" nzShowSearch
+              nzPlaceHolder="选择调整方式" [nzCustomTemplate]="selected_technology" [(ngModel)]="data.value['pattern']"
+              (ngModelChange)="patternSelect(data.value)" [nzOpen]="data.value['edit'] === 3"
+              (nzBlur)="clearFocus(data.value)">
+              <nz-option *ngFor="let name of patterns" [nzLabel]="pinyin.firstLetter(name)" [nzValue]="name"
+                nzCustomContent="true">
+                {{name}}
+              </nz-option>
+              <ng-template #selected_technology let-selected>
+                {{ selected.nzValue }}
+              </ng-template>
+            </nz-select>
+          </td>
+          <td nzAlign="center" nzEllipsis class="editable-unit">
+            <div class="editable-cell" [hidden]="data.value['edit'] === 4" (click)="data.value['edit'] = 4"
+              [ngStyle]="{'color': data.value['factor'] != null ? 'black' : 'lightgrey'}">
+              {{data.value['factor'] != null ? data.value['factor'] : '—'}}
+            </div>
+            <input nz-input type="number" [hidden]="data.value['edit'] !== 4" (blur)="change(data.value)"
+              [(ngModel)]="data.value['factor']" [cdkTrapFocusAutoCapture]="data.value['edit'] === 4"
+              [cdkTrapFocus]="data.value['edit'] === 4" (ngModelChange)="data.value['change'] = true" />
+          </td>
+          <td [nzAlign]="data.value['remark'] ? 'left' : 'center'" nzEllipsis class="editable-unit">
+            <div class="editable-cell" [hidden]="data.value['edit'] === 5" (click)="data.value['edit'] = 5"
+              [ngStyle]="{'color': data.value['remark'] ? 'black' : 'lightgrey'}">
+              {{data.value['remark'] ? data.value['remark'] : '—'}}
+            </div>
+            <input nz-input type="text" [hidden]="data.value['edit'] !== 5" (blur)="change(data.value)"
+              [(ngModel)]="data.value['remark']" [cdkTrapFocusAutoCapture]="data.value['edit'] === 5"
+              [cdkTrapFocus]="data.value['edit'] === 5" (ngModelChange)="data.value['change'] = true" />
+          </td>
+          <td nzAlign="center" nzEllipsis>
+            <a [routerLink]="data.value.id_">材质管理</a>
+            <nz-divider nzType="vertical"></nz-divider>
+            <a (click)="delete(data)">删除</a>
+          </td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </nz-content>
+</nz-layout>

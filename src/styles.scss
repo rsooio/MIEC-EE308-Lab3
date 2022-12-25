@@ -1,0 +1,81 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+  overflow: hidden !important
+}
+
+.routerContainer {
+  position: relative;
+}
+
+.routerContainer>* {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+}
+
+td {
+  padding: 6px 0px !important;
+}
+
+.table-textarea {
+  position: absolute;
+  padding: 1px;
+  top: 0%;
+  left: 0%;
+  height: 100% !important;
+  resize: none;
+}
+
+.editable-cell {
+  position: relative;
+  padding: 5px 12px;
+  cursor: pointer;
+}
+
+.not-editable-cell {
+  position: relative;
+  padding: 5px 12px;
+}
+
+.editable-unit:hover .editable-cell {
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  padding: 3px 11px;
+}
+
+.cdk-global-scrollblock {
+  overflow: hidden;
+}
+
+.header {
+  // width: 100%;
+  height: auto;
+  padding: 0;
+  background-color: white;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+.page-header {
+  width: 100%;
+}
+
+.description {
+  margin: 0;
+}
+
+.edit-button {
+  padding: 0;
+}
+
+.input-cell {
+  display: inline-flex;
+  justify-content: start;
+  align-items: center;
+}
+
+:host ::ng-deep .ant-empty-image {
+  height: 40px;
+}

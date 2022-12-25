@@ -1,0 +1,145 @@
+<nz-layout style="background-color: white;">
+  <nz-header class="header">
+    <nz-page-header class="page-header" nzBackIcon (nzBack)="onBack()">
+      <nz-breadcrumb nz-page-header-breadcrumb>
+        <nz-breadcrumb-item>
+          <a routerLink="..">客户管理</a>
+        </nz-breadcrumb-item>
+        <nz-breadcrumb-item>
+          <a routerLink=".">{{client && client['name'] ? client['name'] : '未命名'}}</a>
+        </nz-breadcrumb-item>
+      </nz-breadcrumb>
+      <nz-page-header-title>售价管理</nz-page-header-title>
+      <nz-page-header-content>
+        <div style="display: flex;">
+          <nz-statistic nzTitle="数量" [nzValue]="(technologyService.options['technology'] || '').length" nzSuffix="种">
+          </nz-statistic>
+          <div>
+          </div>
+        </div>
+      </nz-page-header-content>
+    </nz-page-header>
+  </nz-header>
+  <nz-content>
+    <nz-table #basicTable [nzData]="technologyService.options['technology']" nzTableLayout="fixed"
+      [nzLoading]="!client">
+      <thead>
+        <tr>
+          <!-- <th nzWidth="30px"></th> -->
+          <th nzAlign="center" nzWidth="1%">类型</th>
+          <th nzAlign="center" nzWidth="1%" *ngFor="let type of types">{{type}}</th>
+          <!-- <th nzAlign="center">默认</th>
+          <th nzAlign="center">出风口</th>
+          <th nzAlign="center">进风口</th>
+          <th nzAlign="center">检修口</th> -->
+          <th nzAlign="center" nzWidth="1%">备注</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let technology of basicTable.data">
+          <tr>
+            <!-- <td nzAlign="center" [nzExpand]="expandSet.has(technologyKey)"
+              [nzShowExpand]="textureList(technologyKey).length > 0"
+              (nzExpandChange)="onExpandChange(technologyKey, $event)">
+            </td> -->
+            <td nzAlign="center" nzEllipsis [nzExpand]="expandSet.has(technology.value)"
+              [nzShowExpand]="!!technologyService.options[technology.value]"
+              (nzExpandChange)="onExpandChange(technology.value, $event)">
+              {{technology.label}}
+            </td>
+            <td nzAlign="center" nzEllipsis class="editable-unit" *ngFor="let type of types">
+              <div class="editable-cell" *ngIf="hidden !== (technology.value+'-'+type)"
+                (click)="hidden = technology.value+'-'+type">
+                {{ prices[technology.value+'-'+type] ? prices[technology.value+'-'+type] : '-' }}
+              </div>
+              <input nz-input type="number" *ngIf="hidden === (technology.value+'-'+type)" (blur)="update()"
+                [(ngModel)]="prices[technology.value+'-'+type]"
+                [cdkTrapFocusAutoCapture]="hidden === (technology.value+'-'+type)"
+                [cdkTrapFocus]="hidden === (technology.value+'-'+type)" (ngModelChange)="change = true" />
+            </td>
+            <td nzAlign="center" nzEllipsis class="editable-unit">
+              <div class="editable-cell" *ngIf="hidden !== (technology.value+'-default')"
+                (click)="hidden = technology.value+'-default'">
+                {{ prices[technology.value+'-default'] ? prices[technology.value+'-default'] : '-' }}
+              </div>
+              <textarea class="table-textarea" nz-input type="text" *ngIf="hidden === (technology.value+'-default')"
+                (blur)="update()" [(ngModel)]="prices[technology.value+'-default']"
+                [cdkTrapFocusAutoCapture]="hidden === (technology.value+'-default')"
+                [cdkTrapFocus]="hidden === (technology.value+'-default')" (ngModelChange)="change = true"></textarea>
+            </td>
+          </tr>
+          <ng-container *ngFor="let texture of technologyService.options[technology.value]">
+            <tr *ngIf="expandSet.has(technology.value)">
+              <td nzAlign="center" nzEllipsis [nzIndentSize]="20"
+                [nzExpand]="expandSet.has(technology.value+texture.value)"
+                [nzShowExpand]="!!technologyService.options[technology.value+texture.value]"
+                (nzExpandChange)="onExpandChange(technology.value+texture.value, $event)">
+                {{ texture.label }}
+              </td>
+              <td nzAlign="center" nzEllipsis class="editable-unit" *ngFor="let type of types">
+                <div class="editable-cell" *ngIf="hidden !== (technology.value+texture.value+'-'+type)"
+                  (click)="hidden = (technology.value+texture.value+'-'+type)">
+                  {{ prices[technology.value+texture.value+'-'+type] ? prices[technology.value+texture.value+'-'+type] :
+                  '-' }}
+                </div>
+                <input nz-input type="number" *ngIf="hidden === (technology.value+texture.value+'-'+type)"
+                  (blur)="update()" [(ngModel)]="prices[technology.value+texture.value+'-'+type]"
+                  [cdkTrapFocusAutoCapture]="hidden === (technology.value+texture.value+'-'+type)"
+                  [cdkTrapFocus]="hidden === (technology.value+texture.value+'-'+type)"
+                  (ngModelChange)="change = true" />
+              </td>
+              <td nzAlign="center" nzEllipsis class="editable-unit">
+                <div class="editable-cell" *ngIf="hidden !== (technology.value+texture.value+'-default')"
+                  (click)="hidden = (technology.value+texture.value+'-default')">
+                  {{ prices[technology.value+texture.value+'-default'] ?
+                  prices[technology.value+texture.value+'-default'] :
+                  '-' }}
+                </div>
+                <textarea class="table-textarea" nz-input type="text"
+                  *ngIf="hidden === (technology.value+texture.value+'-default')" (blur)="update()"
+                  [(ngModel)]="prices[technology.value+texture.value+'-default']"
+                  [cdkTrapFocusAutoCapture]="hidden === (technology.value+texture.value+'-default')"
+                  [cdkTrapFocus]="hidden === (technology.value+texture.value+'-default')"
+                  (ngModelChange)="change = true"></textarea>
+              </td>
+            </tr>
+            <ng-container *ngFor="let color of technologyService.options[technology.value+ texture.value]">
+              <tr *ngIf="expandSet.has(technology.value+texture.value)">
+                <td nzAlign="center" nzEllipsis [nzIndentSize]="40">
+                  {{ color.label}}
+                </td>
+                <td nzAlign="center" nzEllipsis class="editable-unit" *ngFor="let type of types">
+                  <div class="editable-cell" *ngIf="hidden !== (technology.value+texture.value+color.value+'-'+type)"
+                    (click)="hidden = (technology.value+texture.value+color.value+'-'+type)">
+                    {{ prices[technology.value+texture.value+color.value+'-'+type] ?
+                    prices[technology.value+texture.value+color.value+'-'+type] : '-'
+                    }}
+                  </div>
+                  <input nz-input type="number" *ngIf="hidden === (technology.value+texture.value+color.value+'-'+type)"
+                    (blur)="update()" [(ngModel)]="prices[technology.value+texture.value+color.value+'-'+type]"
+                    [cdkTrapFocusAutoCapture]="hidden === (technology.value+texture.value+color.value+'-'+type)"
+                    [cdkTrapFocus]="hidden === (technology.value+texture.value+color.value+'-'+type)"
+                    (ngModelChange)="change = true" />
+                </td>
+                <td nzAlign="center" nzEllipsis class="editable-unit">
+                  <div class="editable-cell" *ngIf="hidden !== (technology.value+texture.value+color.value+'-default')"
+                    (click)="hidden = (technology.value+texture.value+color.value+'-default')">
+                    {{ prices[technology.value+texture.value+color.value+'-default'] ?
+                    prices[technology.value+texture.value+color.value+'-default'] : '-'
+                    }}
+                  </div>
+                  <textarea class="table-textarea" nz-input type="text"
+                    *ngIf="hidden === (technology.value+texture.value+color.value+'-default')" (blur)="update()"
+                    [(ngModel)]="prices[technology.value+texture.value+color.value+'-default']"
+                    [cdkTrapFocusAutoCapture]="hidden === (technology.value+texture.value+color.value+'-default')"
+                    [cdkTrapFocus]="hidden === (technology.value+texture.value+color.value+'-default')"
+                    (ngModelChange)="change = true"></textarea>
+                </td>
+              </tr>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </tbody>
+    </nz-table>
+  </nz-content>
+</nz-layout>
